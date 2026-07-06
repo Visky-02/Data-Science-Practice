@@ -4,12 +4,14 @@ import pickle
 import numpy as np
 import os
 
-# Ye lines Python ko app.py ka current folder location bata dengi
-current_dir = os.path.dirname(__file__)
-model_path = os.path.join(current_dir, 'titanic_model.pkl')
-scaler_path = os.path.join(current_dir, 'titanic_scaler.pkl')
+# Pata karo file kahan hai
+base_path = os.path.dirname(os.path.abspath(__file__))
 
-# Ab hum direct us dynamic path se load karenge
+# Model aur Scaler ka full path banao
+model_path = os.path.join(base_path, 'titanic_model.pkl')
+scaler_path = os.path.join(base_path, 'titanic_scaler.pkl')
+
+# Ab load karo
 with open(model_path, 'rb') as f:
     model = pickle.load(f)
 
