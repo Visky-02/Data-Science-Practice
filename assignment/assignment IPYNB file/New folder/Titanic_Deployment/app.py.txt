@@ -2,12 +2,18 @@ import streamlit as st
 import pandas as pd
 import pickle
 import numpy as np
+import os
 
-# Load the saved model and scaler
-with open('titanic_model.pkl', 'rb') as f:
+# Ye lines Python ko app.py ka current folder location bata dengi
+current_dir = os.path.dirname(__file__)
+model_path = os.path.join(current_dir, 'titanic_model.pkl')
+scaler_path = os.path.join(current_dir, 'titanic_scaler.pkl')
+
+# Ab hum direct us dynamic path se load karenge
+with open(model_path, 'rb') as f:
     model = pickle.load(f)
 
-with open('titanic_scaler.pkl', 'rb') as f:
+with open(scaler_path, 'rb') as f:
     scaler = pickle.load(f)
 
 # Streamlit UI
