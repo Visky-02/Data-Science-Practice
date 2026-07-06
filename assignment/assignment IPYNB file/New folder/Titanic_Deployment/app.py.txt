@@ -1,0 +1,51 @@
+import streamlit as st
+import pandas as pd
+import pickle
+import numpy as np
+
+# Load the saved model and scaler
+with open('titanic_model.pkl', 'rb') as f:
+    model = pickle.load(f)
+
+with open('titanic_scaler.pkl', 'rb') as f:
+    scaler = pickle.load(f)
+
+# Streamlit UI
+st.title("🚢 Titanic Survival Prediction App")
+st.write("Enter passenger details to predict if they would have survived the Titanic disaster.")
+
+# User Inputs
+pclass = st.selectbox("Passenger Class (Pclass)", [1, 2, 3])
+sex = st.selectbox("Gender", ["Male", "Female"])
+age = st.slider("Age", 0, 100, 30)
+sibsp = st.number_input("Number of Siblings/Spouses Aboard", 0, 10, 0)
+parch = st.number_input("Number of Parents/Children Aboard", 0, 10, 0)
+fare = st.number_input("Fare Paid ($)", 0.0, 500.0, 32.2)
+embarked = st.selectbox("Port of Embarkation", ["C (Cherbourg)", "Q (Queenstown)", "S (Southampton)"])
+
+# Convert Inputs to Match Model Format
+# Categorical mapping based on our get_dummies setup
+sex_male = 1 if sex == "Male" else 0
+embarked_q = 1 if embarked == "Q (Queenstown)" else 0
+embarked_s = 1 if embarked == "S (Southampton)" else 0
+
+# Predict Button
+if st.button("Predict Survival"):
+    # Create an array of features in the EXACT order of X_train columns
+    features = np.array([[pclass, age, sibsp, parch, fare, sex_male, embarked_q, embarked_s]])
+    
+    # Scale the features
+    scaled_features = scaler.transform(features)
+    
+    # Make Prediction
+    prediction = model.predict(scaled_features)
+    probability = model.predict_proba(scaled_features)[0][1]
+    
+    # Show Results
+    st.markdown("---")
+    if prediction[0] == 1:
+        st.success(f"🟢 **SURVIVED!** (Probability: {probability*100:.2f}%)")
+        st.write("This passenger has a high chance of surviving.")
+    else:
+        st.error(f"🔴 **DID NOT SURVIVE!** (Probability: {probability*100:.2f}%)")
+        st.write("Unfortunately, this passenger would likely not have survived.")
